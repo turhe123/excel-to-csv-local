@@ -107,7 +107,7 @@ test.describe('Excel to CSV Converter', () => {
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('SKU,Product,Price');
   });
 
-  test('edge cases: quoting, merged cells, hidden sheet, formulas left alone, trailing rows trimmed', async ({ page }) => {
+  test('edge cases: quoting, merged cells, hidden sheet, formulas left alone, long numbers kept, trailing rows trimmed', async ({ page }) => {
     await open(page, 'edge-cases.xlsx');
     await expect(page.locator('#sheet option')).toHaveText(['Visible', 'Archive (hidden)']);
     const file = await download(page);
@@ -120,7 +120,13 @@ test.describe('Excel to CSV Converter', () => {
       'Leading equals,=not a formula',
       'Sum,5',
       'Arrival,2026-03-09 12:00:00',
+      'Barcode,9780306406157',
+      'Phone,447123456789',
+      'Ratio,0.3',
     ].join('\r\n'));
+    // General-format numbers keep every digit in the preview too, never scientific notation.
+    await expect(page.locator('#csv-preview')).toContainText('9780306406157');
+    await expect(page.locator('#csv-preview')).not.toContainText('E+');
     await page.selectOption('#sheet', 'Archive');
     await expect(page.locator('#result-card .chip')).toHaveText('hidden sheet');
   });

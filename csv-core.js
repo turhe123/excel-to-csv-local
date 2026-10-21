@@ -78,9 +78,21 @@
       const iso = isoDate(cell, date1904);
       if (iso) return iso;
     }
+    if (cell.t === 'n' && isGeneral(cell.z)) return rawNumber(cell.v);
     if (cell.w != null) return String(cell.w);
     if (cell.t === 'b') return cell.v ? 'TRUE' : 'FALSE';
     return String(cell.v);
+  }
+
+  const isGeneral = (z) => !z || String(z).toLowerCase() === 'general';
+
+  // General-format numbers carry no display rule, so write the stored value in full. The formatted text
+  // (cell.w) imitates Excel's narrow-column display and turns 9780306406157 into 9.78031E+12, which
+  // silently destroys barcodes, phone numbers and account numbers. Excel keeps 15 significant digits, so
+  // rounding there also hides binary noise such as 0.30000000000000004.
+  function rawNumber(v) {
+    if (typeof v !== 'number' || !Number.isFinite(v)) return String(v);
+    return String(Number(v.toPrecision(15)));
   }
 
   // Bounds of the sheet with empty trailing rows and columns removed (formatting can stretch !ref far

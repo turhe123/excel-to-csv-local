@@ -75,14 +75,17 @@ function edgeWorkbook() {
     ['Leading equals', '=not a formula'],
     ['Sum', null],
     ['Arrival', serial(2026, 3, 9) + 0.5],
+    ['Barcode', 9780306406157],
+    ['Phone', 447123456789],
+    ['Ratio', 0.1 + 0.2],
   ]);
   ws['!merges'] = [{ s: { r: 1, c: 0 }, e: { r: 1, c: 1 } }];
   ws.B6 = { t: 'n', v: 5, f: '2+3' };
   ws.B7.z = 'yyyy-mm-dd hh:mm';
   // Trailing empty rows that only carry an empty value (as formatting leftovers do).
-  ws.A9 = { t: 's', v: '' };
-  ws.A10 = { t: 'z' };
-  ws['!ref'] = 'A1:C10';
+  ws.A12 = { t: 's', v: '' };
+  ws.A13 = { t: 'z' };
+  ws['!ref'] = 'A1:C13';
   XLSX.utils.book_append_sheet(wb, ws, 'Visible');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['secret'], ['value']]), 'Archive');
   wb.Workbook = { Sheets: [{ Hidden: 0 }, { Hidden: 1 }] };
